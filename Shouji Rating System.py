@@ -272,7 +272,7 @@ if st.button("Calculate new ratings", type="primary", use_container_width=True):
         st.session_state.outcome = 0.0
     
     run_update()
-    st.success("Ratings updated!")
+    st.expander("Ratings updated!")
 
 st.markdown("---")
 st.caption("Shouji Rating System • 2026")
