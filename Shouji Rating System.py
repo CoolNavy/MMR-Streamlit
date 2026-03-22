@@ -3,13 +3,14 @@ import streamlit as st
 import numpy as np
 
 # ───────────────────────────────────────────────
-# Page config & custom styling
+# Page config & styling
 # ───────────────────────────────────────────────
 st.set_page_config(page_title="Shouji Rating System", layout="wide")
 
 st.markdown(
     """
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+
 <style>
 :root {
     --main:   #6464ff;
@@ -18,202 +19,94 @@ st.markdown(
     --input-bg: #0a0a4a;
 }
 
-/* ───────────────────────────── */
-/* Base App */
-/* ───────────────────────────── */
+/* Base */
 .stApp {
     background:
-        radial-gradient(circle at 20% 30%, rgba(100,100,255,0.08), transparent 40%),
-        radial-gradient(circle at 80% 70%, rgba(225,15,15,0.06), transparent 40%),
+        radial-gradient(circle at 20% 30%, rgba(100,100,255,0.10), transparent 45%),
+        radial-gradient(circle at 80% 70%, rgba(225,15,15,0.08), transparent 45%),
+        radial-gradient(circle at 50% 50%, rgba(100,100,255,0.04), transparent 60%),
         var(--bg) !important;
     font-family: 'Orbitron', sans-serif !important;
-    letter-spacing: 0.4px;
 }
 
 * {
     color: var(--main) !important;
+    transition: all 0.2s ease;
 }
 
-/* ───────────────────────────── */
-/* Typography Glow Refinement */
-/* ───────────────────────────── */
-h1, h2, h3, h4, h5, h6,
-.stSubheader, label, .stRadio > div > label {
-    text-shadow:
-        0 0 6px var(--shadow),
-        0 0 12px rgba(225,15,15,0.4),
-        1px 1px 3px rgba(0,0,0,0.7) !important;
-    letter-spacing: 1px;
+/* Glow animation */
+@keyframes pulseGlow {
+    0%   { text-shadow: 0 0 6px var(--shadow); }
+    50%  { text-shadow: 0 0 14px var(--shadow); }
+    100% { text-shadow: 0 0 6px var(--shadow); }
 }
 
-/* ───────────────────────────── */
-/* Glass Card Effect */
-/* ───────────────────────────── */
+h1, h2, h3, h4, h5, h6, label {
+    animation: pulseGlow 3s infinite ease-in-out;
+}
+
+/* Cards */
 .stContainer[border="true"],
 .stMetric,
 .stExpander {
-    backdrop-filter: blur(6px);
-    border: 1px solid var(--main) !important;
-    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border-radius: 14px;
+    border: 1px solid rgba(100,100,255,0.6) !important;
+
     background:
-        linear-gradient(145deg, rgba(10,10,74,0.95), rgba(10,10,74,0.75)) !important;
+        linear-gradient(145deg, rgba(10,10,74,0.95), rgba(10,10,74,0.65));
+
     box-shadow:
-        0 6px 18px var(--shadow),
-        inset 0 0 12px rgba(225,15,15,0.15),
-        0 0 25px rgba(100,100,255,0.08);
-    transition: all 0.25s ease;
+        0 8px 24px var(--shadow),
+        inset 0 0 14px rgba(225,15,15,0.15);
 }
 
 .stContainer[border="true"]:hover,
 .stMetric:hover,
 .stExpander:hover {
-    transform: translateY(-2px) scale(1.01);
-    box-shadow:
-        0 10px 28px var(--shadow),
-        inset 0 0 16px rgba(225,15,15,0.25),
-        0 0 30px rgba(100,100,255,0.12);
+    transform: translateY(-3px) scale(1.01);
 }
 
-/* ───────────────────────────── */
 /* Buttons */
-/* ───────────────────────────── */
 .stButton > button {
-    background-color: var(--input-bg) !important;
-    color: var(--main) !important;
+    background: linear-gradient(145deg, #0a0a4a, #101070) !important;
+    border-radius: 10px;
     border: 1px solid var(--main) !important;
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
-    box-shadow:
-        0 3px 10px var(--shadow),
-        inset 0 1px 4px rgba(225,15,15,0.25);
-    text-shadow:
-        0 0 8px var(--shadow),
-        1px 1px 3px rgba(0,0,0,0.8);
-    font-weight: 600;
-    letter-spacing: 0.6px;
-    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
 }
 
-.stButton > button:hover {
-    transform: translateY(-1px);
-    background-color: #101070 !important;
-    border-color: #9a9aff !important;
-    box-shadow:
-        0 8px 22px var(--shadow),
-        inset 0 1px 6px rgba(225,15,15,0.4);
+.stButton > button::after {
+    content: "";
+    position: absolute;
+    left: -120%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.2), transparent);
 }
 
-.stButton > button:active {
-    transform: scale(0.97);
+.stButton > button:hover::after {
+    left: 120%;
+    transition: 0.5s;
 }
 
-/* ───────────────────────────── */
 /* Inputs */
-/* ───────────────────────────── */
-.stNumberInput > div > div > input,
-.stSelectbox > div > div > select {
+.stNumberInput input,
+.stSelectbox select {
     background-color: var(--input-bg) !important;
-    border: 1px solid var(--main) !important;
-    border-radius: 6px;
-    padding: 6px 8px;
-    box-shadow: inset 0 1px 6px rgba(225,15,15,0.25);
-    transition: all 0.2s ease;
-}
-
-.stNumberInput > div > div > input:focus,
-.stSelectbox > div > div > select:focus {
-    outline: none;
-    box-shadow:
-        0 0 10px var(--shadow),
-        inset 0 1px 6px rgba(225,15,15,0.35);
-}
-
-/* ───────────────────────────── */
-/* Radio Buttons */
-/* ───────────────────────────── */
-.stRadio > div {
-    background-color: var(--input-bg) !important;
-    border: 1px solid var(--main) !important;
     border-radius: 8px;
-    padding: 6px;
-    box-shadow: inset 0 0 8px rgba(225,15,15,0.2);
+    border: 1px solid var(--main) !important;
 }
 
-/* ───────────────────────────── */
-/* Metrics */
-/* ───────────────────────────── */
-.stMetric {
-    padding: 12px 14px;
-}
-
-.stMetric label {
-    opacity: 0.8;
-    font-size: 0.9rem;
-}
-
-.stMetric > div > div > div {
-    font-size: 1.4rem;
-    letter-spacing: 1px;
-}
-
-/* ───────────────────────────── */
 /* Divider */
-/* ───────────────────────────── */
 hr {
-    border: none;
-    height: 1px;
-    background: linear-gradient(
-        to right,
-        transparent,
-        var(--main),
-        transparent
-    );
-    margin: 1.5rem 0;
-    opacity: 0.4;
+    height: 2px;
+    background: linear-gradient(to right, transparent, var(--main), transparent);
 }
 
-/* ───────────────────────────── */
-/* Success Message */
-/* ───────────────────────────── */
+/* Success */
 .stSuccess {
-    background-color: rgba(100,100,255,0.10) !important;
-    border: 1px solid var(--main) !important;
-    border-radius: 8px;
-    box-shadow:
-        0 4px 14px var(--shadow),
-        inset 0 0 10px rgba(225,15,15,0.2);
-    animation: fadeIn 0.4s ease;
-}
-
-/* ───────────────────────────── */
-/* Animations */
-/* ───────────────────────────── */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Subtle page load animation */
-.block-container {
-    animation: fadeIn 0.5s ease;
-}
-
-/* Scrollbar (desktop only) */
-::-webkit-scrollbar {
-    width: 8px;
-}
-::-webkit-scrollbar-thumb {
-    background: var(--main);
-    border-radius: 4px;
-}
-::-webkit-scrollbar-track {
-    background: var(--bg);
+    border-radius: 10px;
 }
 </style>
     """,
@@ -221,7 +114,7 @@ hr {
 )
 
 # ───────────────────────────────────────────────
-# Global / default values
+# Defaults
 # ───────────────────────────────────────────────
 DEFAULT = {
     "M": 1500.0,
@@ -234,23 +127,25 @@ DEFAULT = {
 }
 
 # ───────────────────────────────────────────────
-# Session state initialization
+# Session state
 # ───────────────────────────────────────────────
 if "player_a" not in st.session_state:
     st.session_state.player_a = {
         "r": 1500.0, "u": 64.0, "q": 1500.0, "v": 0.07,
         "r_new": None, "u_new": None, "v_new": None
     }
+
 if "player_b" not in st.session_state:
     st.session_state.player_b = {
         "r": 1500.0, "u": 64.0, "q": 1500.0, "v": 0.07,
         "r_new": None, "u_new": None, "v_new": None
     }
+
 if "global_vals" not in st.session_state:
     st.session_state.global_vals = DEFAULT.copy()
 
 # ───────────────────────────────────────────────
-# Functions
+# Math functions
 # ───────────────────────────────────────────────
 def compute_mu(r, M, D): return (r - M) / D
 def compute_sigma(u, D): return u / D
@@ -273,57 +168,52 @@ def update_mu(mu, g, sigma, s, e, p):
     return mu + g * (sigma * (s - e) + sigma * (p - e))
 
 def update_sigma(sigma, v, F, T, W):
-    part1 = sigma * F / (sigma + F)
-    part2 = v * (1 - sigma) / (v + W)
-    return part1 + part2
+    return sigma * F / (sigma + F) + v * (1 - sigma) / (v + W)
 
 def update_v(v, T, N, p, e):
-    abs_diff = abs(p - e)
-    part1 = v * T / (v + T)
-    part2 = abs_diff * (1 - v) / (N + abs_diff)
-    return part1 + part2
+    diff = abs(p - e)
+    return v * T / (v + T) + diff * (1 - v) / (N + diff)
 
+# ───────────────────────────────────────────────
+# Update logic
+# ───────────────────────────────────────────────
 def run_update():
     g = st.session_state.global_vals
-    M, D, C, F, T, W, N = g["M"], g["D"], g["C"], g["F"], g["T"], g["W"], g["N"]
-    
     A = st.session_state.player_a
     B = st.session_state.player_b
 
-    muA    = compute_mu(A["r"], M, D)
-    muB    = compute_mu(B["r"], M, D)
-    sigmaA = compute_sigma(A["u"], D)
-    sigmaB = compute_sigma(B["u"], D)
-    betaA  = compute_beta(A["q"], M, D)
-    betaB  = compute_beta(B["q"], M, D)
+    muA = compute_mu(A["r"], g["M"], g["D"])
+    muB = compute_mu(B["r"], g["M"], g["D"])
 
-    gA = compute_g(C, sigmaB)
-    gB = compute_g(C, sigmaA)
+    sigmaA = compute_sigma(A["u"], g["D"])
+    sigmaB = compute_sigma(B["u"], g["D"])
+
+    betaA = compute_beta(A["q"], g["M"], g["D"])
+    betaB = compute_beta(B["q"], g["M"], g["D"])
+
+    gA = compute_g(g["C"], sigmaB)
+    gB = compute_g(g["C"], sigmaA)
 
     eA = compute_e(muA, muB, sigmaB)
     eB = compute_e(muB, muA, sigmaA)
+
     pA = compute_p(betaA, muB, sigmaB)
     pB = compute_p(betaB, muA, sigmaA)
 
-    # Default to 1 if not set, but radio will override
     sA = st.session_state.get("outcome", 1.0)
     sB = 1 - sA
 
     mu_newA = update_mu(muA, gA, sigmaA, sA, eA, pA)
-    sigma_newA = update_sigma(sigmaA, A["v"], F, T, W)
-    v_newA = update_v(A["v"], T, N, pA, eA)
-
     mu_newB = update_mu(muB, gB, sigmaB, sB, eB, pB)
-    sigma_newB = update_sigma(sigmaB, B["v"], F, T, W)
-    v_newB = update_v(B["v"], T, N, pB, eB)
 
-    A["r_new"] = M + D * mu_newA
-    A["u_new"] = D * sigma_newA
-    A["v_new"] = v_newA
+    A["r_new"] = g["M"] + g["D"] * mu_newA
+    B["r_new"] = g["M"] + g["D"] * mu_newB
 
-    B["r_new"] = M + D * mu_newB
-    B["u_new"] = D * sigma_newB
-    B["v_new"] = v_newB
+    A["u_new"] = g["D"] * update_sigma(sigmaA, A["v"], g["F"], g["T"], g["W"])
+    B["u_new"] = g["D"] * update_sigma(sigmaB, B["v"], g["F"], g["T"], g["W"])
+
+    A["v_new"] = update_v(A["v"], g["T"], g["N"], pA, eA)
+    B["v_new"] = update_v(B["v"], g["T"], g["N"], pB, eB)
 
 # ───────────────────────────────────────────────
 # UI
@@ -331,38 +221,23 @@ def run_update():
 st.title("Shouji Rating System")
 st.caption("A 2026 papered MMR system.")
 
-col_global, col_outcome = st.columns([2, 1])
-
-with col_global:
-    with st.expander("Global Parameters", expanded=False):
-        cols = st.columns(4)
-        for i, k in enumerate(["M", "D", "C", "F"]):
-            st.session_state.global_vals[k] = cols[i].number_input(
-                k, value=DEFAULT[k], step=0.1, format="%.2f", key=f"g_{k}"
-            )
-        cols = st.columns(3)
-        for i, k in enumerate(["T", "W", "N"]):
-            st.session_state.global_vals[k] = cols[i].number_input(
-                k, value=DEFAULT[k], step=0.1, format="%.2f", key=f"g2_{k}"
-            )
-
 colA, colB = st.columns(2)
 
-def player_card(player_key, title):
-    p = st.session_state[player_key]
+def player_card(key, title):
+    p = st.session_state[key]
     with st.container(border=True):
         st.subheader(title)
         c1, c2 = st.columns(2)
-        p["r"] = c1.number_input("Rating (r)", value=p["r"], step=1.0, format="%.1f", key=f"{player_key}_r")
-        p["u"] = c2.number_input("RD (u)", value=p["u"], step=1.0, min_value=1.0, format="%.1f", key=f"{player_key}_u")
-        p["q"] = c1.number_input("Performance rating (q)", value=p["q"], step=10.0, format="%.1f", key=f"{player_key}_q")
-        p["v"] = c2.number_input("Volatility (v)", value=p["v"], step=0.001, format="%.4f", key=f"{player_key}_v")
+
+        p["r"] = c1.number_input("Rating", value=p["r"])
+        p["u"] = c2.number_input("RD", value=p["u"])
+        p["q"] = c1.number_input("Performance", value=p["q"])
+        p["v"] = c2.number_input("Volatility", value=p["v"])
 
         if p["r_new"] is not None:
-            st.markdown("**After match**")
             st.metric("New Rating", f"{p['r_new']:.0f}", delta=f"{p['r_new'] - p['r']:+.0f}")
-            st.metric("New RD", f"{p['u_new']:.1f}", delta=f"{p['u_new'] - p['u']:+.1f}")
-            st.metric("New Volatility", f"{p['v_new']:.4f}")
+            st.metric("New RD", f"{p['u_new']:.1f}")
+            st.metric("Volatility", f"{p['v_new']:.4f}")
 
 with colA:
     player_card("player_a", "Player A")
@@ -370,24 +245,12 @@ with colA:
 with colB:
     player_card("player_b", "Player B")
 
-st.markdown("### Match Outcome")
-outcome = st.radio(
-    "Result",
-    ["A wins", "Draw", "B wins"],
-    horizontal=True,
-    index=0   # ← default = A wins
-)
+outcome = st.radio("Result", ["A wins", "Draw", "B wins"], horizontal=True)
 
-if st.button("Calculate new ratings", type="primary", use_container_width=True):
-    if outcome == "A wins":
-        st.session_state.outcome = 1.0
-    elif outcome == "Draw":
-        st.session_state.outcome = 0.5
-    else:
-        st.session_state.outcome = 0.0
-    
+if st.button("Calculate", use_container_width=True):
+    st.session_state.outcome = {"A wins":1.0,"Draw":0.5,"B wins":0.0}[outcome]
     run_update()
-    st.expander("Ratings updated!")
+    st.success("Ratings updated!")
 
 st.markdown("---")
 st.caption("Shouji Rating System • 2026")
