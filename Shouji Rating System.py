@@ -3,7 +3,7 @@ import streamlit as st
 import numpy as np
 
 # ───────────────────────────────────────────────
-#  Page config & custom styling
+# Page config & custom styling
 # ───────────────────────────────────────────────
 st.set_page_config(page_title="Shouji Rating System", layout="wide")
 
@@ -11,53 +11,83 @@ st.markdown(
     """
     <style>
     :root {
-        --main: #6464ff;
-        --bg: #000064;
-        --shadow: #e10f0f;
+        --main:   #6464ff;     /* text, borders, accents */
+        --bg:     #000064;     /* backgrounds only */
+        --shadow: #e10f0f;     /* shadows & glows only */
+        --input-bg: #0a0a4a;   /* slightly lighter than bg for inputs */
     }
     .stApp {
         background-color: var(--bg) !important;
+    }
+    * {
         color: var(--main) !important;
     }
     .stButton > button {
-        background-color: var(--bg) !important;
+        background-color: var(--input-bg) !important;
         color: var(--main) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: 0 4px 8px var(--shadow) !important;
+        box-shadow: 0 3px 10px var(--shadow) !important;
+        transition: all 0.2s;
     }
     .stButton > button:hover {
-        background-color: var(--bg) !important;
-        border-color: var(--main) !important;
+        background-color: #101070 !important;
+        border-color: #8a8aff !important;
+        box-shadow: 0 6px 16px var(--shadow) !important;
     }
-    .stNumberInput > div > div > input {
-        background-color: var(--bg) !important;
+    .stButton > button:active {
+        box-shadow: 0 1px 4px var(--shadow) !important;
+    }
+    .stNumberInput > div > div > input,
+    .stTextInput > div > div > input {
+        background-color: var(--input-bg) !important;
+        color: var(--main) !important;
+        border: 1px solid var(--main) !important;
+        box-shadow: inset 0 1px 4px rgba(225,15,15,0.15) !important;
+    }
+    .stSelectbox > div > div > select,
+    .stRadio > div {
+        background-color: var(--input-bg) !important;
         color: var(--main) !important;
         border: 1px solid var(--main) !important;
     }
-    .stSelectbox > div > div > select {
-        background-color: var(--bg) !important;
-        color: var(--main) !important;
-        border: 1px solid var(--main) !important;
-    }
-    h1, h2, h3 {
+    h1, h2, h3, h4, h5, h6 {
         color: var(--main) !important;
     }
     .stExpander {
         border: 1px solid var(--main) !important;
-        background-color: var(--bg) !important;
+        background-color: var(--input-bg) !important;
+        box-shadow: 0 2px 8px var(--shadow) !important;
+    }
+    .stExpander > div > div > button[aria-expanded="true"] {
+        background-color: transparent !important;
     }
     hr {
         border-color: var(--main) !important;
+        opacity: 0.4;
     }
-    .stSuccess {
-        background-color: var(--bg) !important;
+    .stSuccess, .stInfo {
+        background-color: rgba(100,100,255,0.08) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: 1px solid var(--shadow) !important;
+        box-shadow: 0 2px 8px var(--shadow) !important;
     }
     .stError {
-        background-color: var(--bg) !important;
+        background-color: rgba(225,15,15,0.12) !important;
+        border: 1px solid var(--shadow) !important;
+        box-shadow: 0 2px 8px var(--shadow) !important;
+    }
+    .stMetric {
+        background-color: var(--input-bg) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: 1px solid var(--shadow) !important;
+        border-radius: 6px;
+        padding: 8px;
+        box-shadow: 0 3px 10px var(--shadow) !important;
+    }
+    .stContainer[border="true"] {
+        border: 1px solid var(--main) !important;
+        border-radius: 8px;
+        background-color: var(--input-bg) !important;
+        box-shadow: 0 4px 12px var(--shadow) !important;
+        padding: 16px;
     }
     </style>
     """,
@@ -65,7 +95,7 @@ st.markdown(
 )
 
 # ───────────────────────────────────────────────
-#  Global / default values
+# Global / default values (unchanged)
 # ───────────────────────────────────────────────
 DEFAULT = {
     "M": 1500.0,
@@ -78,7 +108,7 @@ DEFAULT = {
 }
 
 # ───────────────────────────────────────────────
-#  Session state initialization
+# Session state initialization (unchanged)
 # ───────────────────────────────────────────────
 if "player_a" not in st.session_state:
     st.session_state.player_a = {
@@ -94,10 +124,10 @@ if "global_vals" not in st.session_state:
     st.session_state.global_vals = DEFAULT.copy()
 
 # ───────────────────────────────────────────────
-#  Functions
+# Functions (unchanged)
 # ───────────────────────────────────────────────
 def compute_mu(r, M, D): return (r - M) / D
-def compute_sigma(u, D):  return u / D
+def compute_sigma(u, D): return u / D
 def compute_beta(q, M, D): return (q - M) / D
 
 def compute_g(C, sigma_opp):
@@ -129,18 +159,16 @@ def update_v(v, T, N, p, e):
 
 def run_update():
     g = st.session_state.global_vals
-    M, D, C, F, T, W, N = g["M"], g["D"], g["C"], g["F"], g["T"], g["W"], g["N"]
-
+    M, D, C, F, T, W, N = [g[k] for k in ["M","D","C","F","T","W","N"]]
     A = st.session_state.player_a
     B = st.session_state.player_b
 
-    # Pre-match values
-    muA = compute_mu(A["r"], M, D)
-    muB = compute_mu(B["r"], M, D)
+    muA    = compute_mu(A["r"], M, D)
+    muB    = compute_mu(B["r"], M, D)
     sigmaA = compute_sigma(A["u"], D)
     sigmaB = compute_sigma(B["u"], D)
-    betaA = compute_beta(A["q"], M, D)
-    betaB = compute_beta(B["q"], M, D)
+    betaA  = compute_beta(A["q"], M, D)
+    betaB  = compute_beta(B["q"], M, D)
 
     gA = compute_g(C, sigmaB)
     gB = compute_g(C, sigmaA)
@@ -150,21 +178,17 @@ def run_update():
     pA = compute_p(betaA, muB, sigmaB)
     pB = compute_p(betaB, muA, sigmaA)
 
-    # Outcome
     sA = st.session_state.get("outcome", 0.5)
     sB = 1 - sA
 
-    # Update A
     mu_newA = update_mu(muA, gA, sigmaA, sA, eA, pA)
     sigma_newA = update_sigma(sigmaA, A["v"], F, T, W)
     v_newA = update_v(A["v"], T, N, pA, eA)
 
-    # Update B
     mu_newB = update_mu(muB, gB, sigmaB, sB, eB, pB)
     sigma_newB = update_sigma(sigmaB, B["v"], F, T, W)
     v_newB = update_v(B["v"], T, N, pB, eB)
 
-    # Save new values
     A["r_new"] = M + D * mu_newA
     A["u_new"] = D * sigma_newA
     A["v_new"] = v_newA
@@ -174,10 +198,10 @@ def run_update():
     B["v_new"] = v_newB
 
 # ───────────────────────────────────────────────
-#  UI
+# UI
 # ───────────────────────────────────────────────
 st.title("Shouji Rating System")
-st.markdown("A 2026 papered mmr system.")
+st.caption("A 2026 papered MMR system")
 
 col_global, col_outcome = st.columns([2, 1])
 
@@ -231,7 +255,7 @@ if st.button("Calculate new ratings", type="primary", use_container_width=True):
 
     run_update()
     st.success("Ratings updated!")
-    st.rerun()
+    # st.rerun()  ← usually not needed after success; remove if you prefer no auto-refresh
 
 st.markdown("---")
-st.caption("A 2026 papered mmr system.")
+st.caption("Shouji Rating System • 2026.")
