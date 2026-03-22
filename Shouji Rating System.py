@@ -10,97 +10,212 @@ st.set_page_config(page_title="Shouji Rating System", layout="wide")
 st.markdown(
     """
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <style>
-    :root {
-        --main:   #6464ff;     /* text, borders, accents */
-        --bg:     #000064;     /* backgrounds only */
-        --shadow: #e10f0f;     /* shadows + text-glow */
-        --input-bg: #0a0a4a;   /* inputs & card backgrounds */
+<style>
+:root {
+    --main:   #6464ff;
+    --bg:     #000064;
+    --shadow: #e10f0f;
+    --input-bg: #0a0a4a;
+}
+
+/* ───────────────────────────── */
+/* Base App */
+/* ───────────────────────────── */
+.stApp {
+    background:
+        radial-gradient(circle at 20% 30%, rgba(100,100,255,0.08), transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(225,15,15,0.06), transparent 40%),
+        var(--bg) !important;
+    font-family: 'Orbitron', sans-serif !important;
+    letter-spacing: 0.4px;
+}
+
+* {
+    color: var(--main) !important;
+}
+
+/* ───────────────────────────── */
+/* Typography Glow Refinement */
+/* ───────────────────────────── */
+h1, h2, h3, h4, h5, h6,
+.stSubheader, label, .stRadio > div > label {
+    text-shadow:
+        0 0 6px var(--shadow),
+        0 0 12px rgba(225,15,15,0.4),
+        1px 1px 3px rgba(0,0,0,0.7) !important;
+    letter-spacing: 1px;
+}
+
+/* ───────────────────────────── */
+/* Glass Card Effect */
+/* ───────────────────────────── */
+.stContainer[border="true"],
+.stMetric,
+.stExpander {
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--main) !important;
+    border-radius: 12px;
+    background:
+        linear-gradient(145deg, rgba(10,10,74,0.95), rgba(10,10,74,0.75)) !important;
+    box-shadow:
+        0 6px 18px var(--shadow),
+        inset 0 0 12px rgba(225,15,15,0.15),
+        0 0 25px rgba(100,100,255,0.08);
+    transition: all 0.25s ease;
+}
+
+.stContainer[border="true"]:hover,
+.stMetric:hover,
+.stExpander:hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+        0 10px 28px var(--shadow),
+        inset 0 0 16px rgba(225,15,15,0.25),
+        0 0 30px rgba(100,100,255,0.12);
+}
+
+/* ───────────────────────────── */
+/* Buttons */
+/* ───────────────────────────── */
+.stButton > button {
+    background-color: var(--input-bg) !important;
+    color: var(--main) !important;
+    border: 1px solid var(--main) !important;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    box-shadow:
+        0 3px 10px var(--shadow),
+        inset 0 1px 4px rgba(225,15,15,0.25);
+    text-shadow:
+        0 0 8px var(--shadow),
+        1px 1px 3px rgba(0,0,0,0.8);
+    font-weight: 600;
+    letter-spacing: 0.6px;
+    transition: all 0.25s ease;
+}
+
+.stButton > button:hover {
+    transform: translateY(-1px);
+    background-color: #101070 !important;
+    border-color: #9a9aff !important;
+    box-shadow:
+        0 8px 22px var(--shadow),
+        inset 0 1px 6px rgba(225,15,15,0.4);
+}
+
+.stButton > button:active {
+    transform: scale(0.97);
+}
+
+/* ───────────────────────────── */
+/* Inputs */
+/* ───────────────────────────── */
+.stNumberInput > div > div > input,
+.stSelectbox > div > div > select {
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--main) !important;
+    border-radius: 6px;
+    padding: 6px 8px;
+    box-shadow: inset 0 1px 6px rgba(225,15,15,0.25);
+    transition: all 0.2s ease;
+}
+
+.stNumberInput > div > div > input:focus,
+.stSelectbox > div > div > select:focus {
+    outline: none;
+    box-shadow:
+        0 0 10px var(--shadow),
+        inset 0 1px 6px rgba(225,15,15,0.35);
+}
+
+/* ───────────────────────────── */
+/* Radio Buttons */
+/* ───────────────────────────── */
+.stRadio > div {
+    background-color: var(--input-bg) !important;
+    border: 1px solid var(--main) !important;
+    border-radius: 8px;
+    padding: 6px;
+    box-shadow: inset 0 0 8px rgba(225,15,15,0.2);
+}
+
+/* ───────────────────────────── */
+/* Metrics */
+/* ───────────────────────────── */
+.stMetric {
+    padding: 12px 14px;
+}
+
+.stMetric label {
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.stMetric > div > div > div {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+}
+
+/* ───────────────────────────── */
+/* Divider */
+/* ───────────────────────────── */
+hr {
+    border: none;
+    height: 1px;
+    background: linear-gradient(
+        to right,
+        transparent,
+        var(--main),
+        transparent
+    );
+    margin: 1.5rem 0;
+    opacity: 0.4;
+}
+
+/* ───────────────────────────── */
+/* Success Message */
+/* ───────────────────────────── */
+.stSuccess {
+    background-color: rgba(100,100,255,0.10) !important;
+    border: 1px solid var(--main) !important;
+    border-radius: 8px;
+    box-shadow:
+        0 4px 14px var(--shadow),
+        inset 0 0 10px rgba(225,15,15,0.2);
+    animation: fadeIn 0.4s ease;
+}
+
+/* ───────────────────────────── */
+/* Animations */
+/* ───────────────────────────── */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
     }
-    .stApp {
-        background-color: var(--bg) !important;
-        font-family: 'Orbitron', sans-serif !important;
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
-    * {
-        color: var(--main) !important;
-    }
-    h1, h2, h3, h4, h5, h6,
-    .stSubheader, label, .stRadio > div > label {
-        text-shadow: 0 0 8px var(--shadow),
-                     0 0 4px var(--shadow),
-                     1px 1px 3px rgba(0,0,0,0.7) !important;
-    }
-    .stMetric > div > div > div,
-    .stMetric label {
-        text-shadow: 0 0 7px var(--shadow),
-                     0 0 3px var(--shadow) !important;
-    }
-    .stButton > button {
-        background-color: var(--input-bg) !important;
-        color: var(--main) !important;
-        border: 1px solid var(--main) !important;
-        box-shadow: 0 3px 10px var(--shadow),
-                    inset 0 1px 4px rgba(225,15,15,0.25) !important;
-        text-shadow: 0 0 8px var(--shadow),
-                     1px 1px 3px rgba(0,0,0,0.8) !important;
-        font-family: 'Orbitron', sans-serif !important;
-        font-weight: 600;
-        transition: all 0.25s ease;
-    }
-    .stButton > button:hover {
-        background-color: #101070 !important;
-        border-color: #9a9aff !important;
-        box-shadow: 0 6px 18px var(--shadow),
-                    inset 0 1px 6px rgba(225,15,15,0.4) !important;
-        text-shadow: 0 0 12px var(--shadow) !important;
-    }
-    .stNumberInput > div > div > input {
-        background-color: var(--input-bg) !important;
-        color: var(--main) !important;
-        border: 1px solid var(--main) !important;
-        box-shadow: inset 0 1px 5px rgba(225,15,15,0.2) !important;
-        font-family: 'Orbitron', sans-serif !important;
-    }
-    .stSelectbox > div > div > select,
-    .stRadio > div {
-        background-color: var(--input-bg) !important;
-        color: var(--main) !important;
-        border: 1px solid var(--main) !important;
-    }
-    .stExpander {
-        border: 1px solid var(--main) !important;
-        background-color: var(--input-bg) !important;
-        box-shadow: 0 3px 12px var(--shadow) !important;
-    }
-    hr {
-        border-color: var(--main) !important;
-        opacity: 0.35;
-        margin: 1.2rem 0;
-    }
-    .stSuccess {
-        background-color: rgba(100,100,255,0.10) !important;
-        border: 1px solid var(--main) !important;
-        box-shadow: 0 3px 12px var(--shadow) !important;
-    }
-    .stMetric {
-        background-color: var(--input-bg) !important;
-        border: 1px solid var(--main) !important;
-        border-radius: 8px;
-        padding: 10px 12px;
-        box-shadow: 0 3px 10px var(--shadow),
-                    0 -1px 4px rgba(225,15,15,0.15) !important;
-        margin: 8px 0;
-    }
-    .stContainer[border="true"] {
-        border: 1px solid var(--main) !important;
-        border-radius: 10px;
-        background-color: var(--input-bg) !important;
-        box-shadow: 0 4px 12px var(--shadow),
-                    0 -1px 4px rgba(225,15,15,0.15) !important;
-        padding: 16px 18px;
-        margin-bottom: 12px;
-    }
-    </style>
+}
+
+/* Subtle page load animation */
+.block-container {
+    animation: fadeIn 0.5s ease;
+}
+
+/* Scrollbar (desktop only) */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--main);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg);
+}
+</style>
     """,
     unsafe_allow_html=True
 )
