@@ -201,7 +201,7 @@ def run_update():
     pA = compute_p(betaA, muB, sigmaB)
     pB = compute_p(betaB, muA, sigmaA)
 
-    sA = st.session_state.get("outcome", 0.5)
+    sA = st.session_state.get("outcome", 1)
     sB = 1 - sA
 
     mu_newA = update_mu(muA, gA, sigmaA, sA, eA, pA)
