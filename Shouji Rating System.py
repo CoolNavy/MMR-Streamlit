@@ -31,12 +31,12 @@ st.markdown(
     }
     .stNumberInput > div > div > input {
         background-color: var(--bg) !important;
-        color: #e0e0ff !important;
+        color: var(--main) !important;
         border: 1px solid var(--main) !important;
     }
     .stSelectbox > div > div > select {
-        background-color: #0a0a7a !important;
-        color: #e0e0ff !important;
+        background-color: var(--bg) !important;
+        color: var(--main) !important;
         border: 1px solid var(--main) !important;
     }
     h1, h2, h3 {
