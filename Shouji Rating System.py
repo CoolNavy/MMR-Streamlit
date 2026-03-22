@@ -9,40 +9,63 @@ st.set_page_config(page_title="Shouji Rating System", layout="wide")
 
 st.markdown(
     """
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
     <style>
     :root {
         --main:   #6464ff;     /* text, borders, accents */
         --bg:     #000064;     /* backgrounds only */
-        --shadow: #e10f0f;     /* shadows & glows only */
-        --input-bg: #0a0a4a;   /* slightly lighter than bg for inputs */
+        --shadow: #e10f0f;     /* box-shadows + text-shadows only */
+        --input-bg: #0a0a4a;   /* slightly lighter for inputs & containers */
     }
     .stApp {
         background-color: var(--bg) !important;
+        font-family: 'Orbitron', sans-serif !important;
     }
     * {
         color: var(--main) !important;
+    }
+    h1, h2, h3, h4, h5, h6,
+    .stSubheader, .element-container h1, .element-container h2, .element-container h3,
+    label, .stRadio > div > label, .stMarkdown {
+        text-shadow: 0 0 8px var(--shadow),
+                     0 0 4px var(--shadow),
+                     1px 1px 3px rgba(0,0,0,0.7) !important;
+    }
+    .stMetric > div > div > div,
+    .stMetric label {
+        text-shadow: 0 0 7px var(--shadow),
+                     0 0 3px var(--shadow) !important;
     }
     .stButton > button {
         background-color: var(--input-bg) !important;
         color: var(--main) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: 0 3px 10px var(--shadow) !important;
-        transition: all 0.2s;
+        box-shadow: 0 4px 14px var(--shadow),
+                    inset 0 0 8px rgba(225,15,15,0.25) !important;
+        text-shadow: 0 0 8px var(--shadow),
+                     1px 1px 3px rgba(0,0,0,0.8) !important;
+        font-family: 'Orbitron', sans-serif !important;
+        font-weight: 600;
+        transition: all 0.25s ease;
     }
     .stButton > button:hover {
         background-color: #101070 !important;
-        border-color: #8a8aff !important;
-        box-shadow: 0 6px 16px var(--shadow) !important;
+        border-color: #9a9aff !important;
+        box-shadow: 0 8px 24px var(--shadow),
+                    inset 0 0 12px rgba(225,15,15,0.4) !important;
+        text-shadow: 0 0 12px var(--shadow),
+                     0 0 6px var(--shadow) !important;
     }
     .stButton > button:active {
-        box-shadow: 0 1px 4px var(--shadow) !important;
+        box-shadow: 0 2px 8px var(--shadow) !important;
     }
     .stNumberInput > div > div > input,
     .stTextInput > div > div > input {
         background-color: var(--input-bg) !important;
         color: var(--main) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: inset 0 1px 4px rgba(225,15,15,0.15) !important;
+        box-shadow: inset 0 2px 6px rgba(225,15,15,0.2) !important;
+        font-family: 'Orbitron', sans-serif !important;
     }
     .stSelectbox > div > div > select,
     .stRadio > div {
@@ -50,44 +73,43 @@ st.markdown(
         color: var(--main) !important;
         border: 1px solid var(--main) !important;
     }
-    h1, h2, h3, h4, h5, h6 {
-        color: var(--main) !important;
-    }
     .stExpander {
         border: 1px solid var(--main) !important;
         background-color: var(--input-bg) !important;
-        box-shadow: 0 2px 8px var(--shadow) !important;
+        box-shadow: 0 5px 16px var(--shadow) !important;
     }
     .stExpander > div > div > button[aria-expanded="true"] {
         background-color: transparent !important;
+        text-shadow: 0 0 8px var(--shadow) !important;
     }
     hr {
         border-color: var(--main) !important;
         opacity: 0.4;
     }
     .stSuccess, .stInfo {
-        background-color: rgba(100,100,255,0.08) !important;
+        background-color: rgba(100,100,255,0.10) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: 0 2px 8px var(--shadow) !important;
+        box-shadow: 0 4px 14px var(--shadow) !important;
     }
     .stError {
-        background-color: rgba(225,15,15,0.12) !important;
+        background-color: rgba(225,15,15,0.15) !important;
         border: 1px solid var(--shadow) !important;
-        box-shadow: 0 2px 8px var(--shadow) !important;
+        box-shadow: 0 4px 14px var(--shadow) !important;
     }
     .stMetric {
         background-color: var(--input-bg) !important;
         border: 1px solid var(--main) !important;
-        border-radius: 6px;
-        padding: 8px;
-        box-shadow: 0 3px 10px var(--shadow) !important;
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 5px 16px var(--shadow) !important;
     }
     .stContainer[border="true"] {
         border: 1px solid var(--main) !important;
-        border-radius: 8px;
+        border-radius: 10px;
         background-color: var(--input-bg) !important;
-        box-shadow: 0 4px 12px var(--shadow) !important;
-        padding: 16px;
+        box-shadow: 0 6px 20px var(--shadow) !important;
+        padding: 20px;
+        margin-bottom: 16px;
     }
     </style>
     """,
@@ -95,7 +117,7 @@ st.markdown(
 )
 
 # ───────────────────────────────────────────────
-# Global / default values (unchanged)
+# Global / default values
 # ───────────────────────────────────────────────
 DEFAULT = {
     "M": 1500.0,
@@ -108,7 +130,7 @@ DEFAULT = {
 }
 
 # ───────────────────────────────────────────────
-# Session state initialization (unchanged)
+# Session state initialization
 # ───────────────────────────────────────────────
 if "player_a" not in st.session_state:
     st.session_state.player_a = {
@@ -124,7 +146,7 @@ if "global_vals" not in st.session_state:
     st.session_state.global_vals = DEFAULT.copy()
 
 # ───────────────────────────────────────────────
-# Functions (unchanged)
+# Functions
 # ───────────────────────────────────────────────
 def compute_mu(r, M, D): return (r - M) / D
 def compute_sigma(u, D): return u / D
@@ -159,16 +181,17 @@ def update_v(v, T, N, p, e):
 
 def run_update():
     g = st.session_state.global_vals
-    M, D, C, F, T, W, N = [g[k] for k in ["M","D","C","F","T","W","N"]]
+    M, D, C, F, T, W, N = g["M"], g["D"], g["C"], g["F"], g["T"], g["W"], g["N"]
+    
     A = st.session_state.player_a
     B = st.session_state.player_b
 
-    muA    = compute_mu(A["r"], M, D)
-    muB    = compute_mu(B["r"], M, D)
+    muA = compute_mu(A["r"], M, D)
+    muB = compute_mu(B["r"], M, D)
     sigmaA = compute_sigma(A["u"], D)
     sigmaB = compute_sigma(B["u"], D)
-    betaA  = compute_beta(A["q"], M, D)
-    betaB  = compute_beta(B["q"], M, D)
+    betaA = compute_beta(A["q"], M, D)
+    betaB = compute_beta(B["q"], M, D)
 
     gA = compute_g(C, sigmaB)
     gB = compute_g(C, sigmaA)
@@ -201,7 +224,7 @@ def run_update():
 # UI
 # ───────────────────────────────────────────────
 st.title("Shouji Rating System")
-st.caption("A 2026 papered MMR system")
+st.caption("A 2026 papered MMR system.")
 
 col_global, col_outcome = st.columns([2, 1])
 
@@ -255,7 +278,6 @@ if st.button("Calculate new ratings", type="primary", use_container_width=True):
 
     run_update()
     st.success("Ratings updated!")
-    # st.rerun()  ← usually not needed after success; remove if you prefer no auto-refresh
 
 st.markdown("---")
 st.caption("Shouji Rating System • 2026.")
