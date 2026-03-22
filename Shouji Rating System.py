@@ -14,8 +14,8 @@ st.markdown(
     :root {
         --main:   #6464ff;     /* text, borders, accents */
         --bg:     #000064;     /* backgrounds only */
-        --shadow: #e10f0f;     /* box-shadows + text-shadows only */
-        --input-bg: #0a0a4a;   /* slightly lighter for inputs & containers */
+        --shadow: #e10f0f;     /* shadows + text-glow */
+        --input-bg: #0a0a4a;   /* inputs & card backgrounds */
     }
     .stApp {
         background-color: var(--bg) !important;
@@ -25,8 +25,7 @@ st.markdown(
         color: var(--main) !important;
     }
     h1, h2, h3, h4, h5, h6,
-    .stSubheader, .element-container h1, .element-container h2, .element-container h3,
-    label, .stRadio > div > label, .stMarkdown {
+    .stSubheader, label, .stRadio > div > label {
         text-shadow: 0 0 8px var(--shadow),
                      0 0 4px var(--shadow),
                      1px 1px 3px rgba(0,0,0,0.7) !important;
@@ -40,8 +39,8 @@ st.markdown(
         background-color: var(--input-bg) !important;
         color: var(--main) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: 0 4px 14px var(--shadow),
-                    inset 0 0 8px rgba(225,15,15,0.25) !important;
+        box-shadow: 0 3px 10px var(--shadow),
+                    inset 0 1px 4px rgba(225,15,15,0.25) !important;
         text-shadow: 0 0 8px var(--shadow),
                      1px 1px 3px rgba(0,0,0,0.8) !important;
         font-family: 'Orbitron', sans-serif !important;
@@ -51,20 +50,15 @@ st.markdown(
     .stButton > button:hover {
         background-color: #101070 !important;
         border-color: #9a9aff !important;
-        box-shadow: 0 8px 24px var(--shadow),
-                    inset 0 0 12px rgba(225,15,15,0.4) !important;
-        text-shadow: 0 0 12px var(--shadow),
-                     0 0 6px var(--shadow) !important;
+        box-shadow: 0 6px 18px var(--shadow),
+                    inset 0 1px 6px rgba(225,15,15,0.4) !important;
+        text-shadow: 0 0 12px var(--shadow) !important;
     }
-    .stButton > button:active {
-        box-shadow: 0 2px 8px var(--shadow) !important;
-    }
-    .stNumberInput > div > div > input,
-    .stTextInput > div > div > input {
+    .stNumberInput > div > div > input {
         background-color: var(--input-bg) !important;
         color: var(--main) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: inset 0 2px 6px rgba(225,15,15,0.2) !important;
+        box-shadow: inset 0 1px 5px rgba(225,15,15,0.2) !important;
         font-family: 'Orbitron', sans-serif !important;
     }
     .stSelectbox > div > div > select,
@@ -76,40 +70,35 @@ st.markdown(
     .stExpander {
         border: 1px solid var(--main) !important;
         background-color: var(--input-bg) !important;
-        box-shadow: 0 5px 16px var(--shadow) !important;
-    }
-    .stExpander > div > div > button[aria-expanded="true"] {
-        background-color: transparent !important;
-        text-shadow: 0 0 8px var(--shadow) !important;
+        box-shadow: 0 3px 12px var(--shadow) !important;
     }
     hr {
         border-color: var(--main) !important;
-        opacity: 0.4;
+        opacity: 0.35;
+        margin: 1.2rem 0;
     }
-    .stSuccess, .stInfo {
+    .stSuccess {
         background-color: rgba(100,100,255,0.10) !important;
         border: 1px solid var(--main) !important;
-        box-shadow: 0 4px 14px var(--shadow) !important;
-    }
-    .stError {
-        background-color: rgba(225,15,15,0.15) !important;
-        border: 1px solid var(--shadow) !important;
-        box-shadow: 0 4px 14px var(--shadow) !important;
+        box-shadow: 0 3px 12px var(--shadow) !important;
     }
     .stMetric {
         background-color: var(--input-bg) !important;
         border: 1px solid var(--main) !important;
         border-radius: 8px;
-        padding: 12px;
-        box-shadow: 0 5px 16px var(--shadow) !important;
+        padding: 10px 12px;
+        box-shadow: 0 3px 10px var(--shadow),
+                    0 -1px 4px rgba(225,15,15,0.15) !important;
+        margin: 8px 0;
     }
     .stContainer[border="true"] {
         border: 1px solid var(--main) !important;
         border-radius: 10px;
         background-color: var(--input-bg) !important;
-        box-shadow: 0 6px 20px var(--shadow) !important;
-        padding: 20px;
-        margin-bottom: 16px;
+        box-shadow: 0 4px 12px var(--shadow),
+                    0 -1px 4px rgba(225,15,15,0.15) !important;
+        padding: 16px 18px;
+        margin-bottom: 12px;
     }
     </style>
     """,
@@ -186,12 +175,12 @@ def run_update():
     A = st.session_state.player_a
     B = st.session_state.player_b
 
-    muA = compute_mu(A["r"], M, D)
-    muB = compute_mu(B["r"], M, D)
+    muA    = compute_mu(A["r"], M, D)
+    muB    = compute_mu(B["r"], M, D)
     sigmaA = compute_sigma(A["u"], D)
     sigmaB = compute_sigma(B["u"], D)
-    betaA = compute_beta(A["q"], M, D)
-    betaB = compute_beta(B["q"], M, D)
+    betaA  = compute_beta(A["q"], M, D)
+    betaB  = compute_beta(B["q"], M, D)
 
     gA = compute_g(C, sigmaB)
     gB = compute_g(C, sigmaA)
@@ -201,7 +190,8 @@ def run_update():
     pA = compute_p(betaA, muB, sigmaB)
     pB = compute_p(betaB, muA, sigmaA)
 
-    sA = st.session_state.get("outcome", 1)
+    # Default to 1 if not set, but radio will override
+    sA = st.session_state.get("outcome", 1.0)
     sB = 1 - sA
 
     mu_newA = update_mu(muA, gA, sigmaA, sA, eA, pA)
@@ -266,7 +256,12 @@ with colB:
     player_card("player_b", "Player B")
 
 st.markdown("### Match Outcome")
-outcome = st.radio("Result", ["A wins", "Draw", "B wins"], horizontal=True, index=1)
+outcome = st.radio(
+    "Result",
+    ["A wins", "Draw", "B wins"],
+    horizontal=True,
+    index=0   # ← default = A wins
+)
 
 if st.button("Calculate new ratings", type="primary", use_container_width=True):
     if outcome == "A wins":
@@ -275,9 +270,9 @@ if st.button("Calculate new ratings", type="primary", use_container_width=True):
         st.session_state.outcome = 0.5
     else:
         st.session_state.outcome = 0.0
-
+    
     run_update()
     st.success("Ratings updated!")
 
 st.markdown("---")
-st.caption("Shouji Rating System • 2026.")
+st.caption("Shouji Rating System • 2026")
