@@ -43,19 +43,21 @@ st.markdown(
         color: var(--main) !important;
     }
     .stExpander {
-        border: 1px solid var(--shadow) !important;
-        background-color: rgba(10,10,120,0.3) !important;
+        border: 1px solid var(--main) !important;
+        background-color: var(--bg) !important;
     }
     hr {
-        border-color: var(--shadow) !important;
+        border-color: var(--main) !important;
     }
     .stSuccess {
-        background-color: rgba(100,100,255,0.2) !important;
+        background-color: var(--bg) !important;
         border: 1px solid var(--main) !important;
+        box-shadow: 1px solid var(--shadow) !important;
     }
     .stError {
-        background-color: rgba(225,15,15,0.2) !important;
-        border: 1px solid var(--shadow) !important;
+        background-color: var(--bg) !important;
+        border: 1px solid var(--main) !important;
+        box-shadow: 1px solid var(--shadow) !important;
     }
     </style>
     """,
