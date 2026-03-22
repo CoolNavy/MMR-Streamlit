@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Shouji Rating System - 2 Player Lab</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+body {
+    font-family: Orbitron;
+    text-align:center;
+    background: #000064;
+    color: #6464ff;
+    text-shadow: 0 0 10px #6464ff;
+    margin: 0;
+    padding: 0;
+}
+.container {
+    display:flex;
+    justify-content:center;
+    gap:60px;
+    margin-top:40px;
+    flex-wrap:wrap;
+}
+.Acard {
+    background: #000064;
+    color: cyan;
+    padding:25px;
+    border-radius:16px;
+    box-shadow: 0 0 18px cyan;
+    text-shadow: 0 0 12px cyan;
+    width:300px;
+    font-family: Orbitron;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.Acard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 30px cyan;
+}
+.Bcard {
+    background: #000064;
+    color: red;
+    padding:25px;
+    border-radius:16px;
+    box-shadow: 0 0 18px red;
+    text-shadow: 0 0 12px red;
+    width:300px;
+    font-family: Orbitron;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.Bcard:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 0 30px red;
+}
+input {
+    width:90px;
+    margin:8px;
+    padding:6px;
+    font-family: Orbitron;
+    color: #6464ff;
+    background: #000064;
+    border-radius:8px;
+    border: 1px solid #6464ff;
+    text-align:center;
+    transition: all 0.2s ease;
+}
+input:focus {
+    outline: none;
+    box-shadow: 0 0 12px #6464ff;
+    transform: scale(1.05);
+}
+button {
+    padding:14px 28px;
+    margin:20px;
+    font-size:16px;
+    border:none;
+    border-radius:12px;
+    cursor:pointer;
+    font-family: Orbitron;
+    letter-spacing:1px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+button:hover {
+    transform: translateY(-4px);
+}
+button:active {
+    transform: scale(0.95);
+}
+.winA { background: cyan; color: #000064; box-shadow: 0 0 10px cyan; border: 1px cyan; }
+.winB { background: red; color: #000064; box-shadow: 0 0 10px red; border: 1px red; }
+.draw { background: #6464ff; color: #000064; box-shadow: 0 0 10px #6464ff; border: 1px #6464ff; }
+.param { margin:5px; }
+
+/* Container spacing */
+input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100px;
+    background: transparent;
+    cursor: pointer;
+    margin: 15px 0;
+}
+
+/* The Track (the line) */
+input[type="range"]::-webkit-slider-runnable-track {
+    background: #000064;
+    border: 1px solid #6464ff;
+    height: 4px;
+    box-shadow: 0 0 5px #000064;
+}
+
+input[type="range"]::-moz-range-track {
+    background: #000064;
+    border: 1px solid #6464ff;
+    height: 4px;
+}
+
+/* The Thumb (the moving knob) */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    margin-top: -8px; /* Centers thumb on the 4px track */
+    background-color: #6464ff;
+    height: 20px;
+    width: 10px;
+    border: 1px solid #000064;
+    box-shadow: 0 0 10px #6464FF;
+    transition: 0.2s;
+}
+
+input[type="range"]::-moz-range-thumb {
+    background-color: #6464ff;
+    height: 20px;
+    width: 10px;
+    border: 1px solid #000064;
+    border-radius: 0; /* Keeps it square/techy */
+    box-shadow: 0 0 10px #6464FF;
+}
+
+/* Hover effects */
+input[type="range"]:hover::-webkit-slider-thumb {
+    box-shadow: 0 0 15px #6464ff;
+    transform: scaleY(1.2);
+}
+
+input[type="range"]:active::-webkit-slider-thumb {
+    background-color: #000064; /* Dark flash when clicking */
+}
+
+.probability-panel {
+    margin: 24px auto 0 auto;
+    padding: 24px;
+    width: min(880px, calc(100% - 40px));
+    border-radius: 18px;
+    box-shadow: 0 0 18px #6464ff;
+    background: rgba(0, 0, 100, 0.55);
+}
+.probability-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    text-align: left;
+}
+.probability-row {
+    padding: 14px 16px;
+    border: 1px solid rgba(100, 100, 255, 0.35);
+    border-radius: 14px;
+    box-shadow: inset 0 0 10px rgba(100, 100, 255, 0.12), 0 0 10px rgba(100, 100, 255, 0.12);
+}
+.probability-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.probability-title {
+    font-size: 14px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.probability-values {
+    font-size: 12px;
+}
+.probability-track {
+    position: relative;
+    width: 100%;
+    height: 18px;
+    border-radius: 999px;
+    overflow: hidden;
+    border: 1px solid #6464ff;
+    background: linear-gradient(90deg, rgba(0,255,255,0.12) 0%, rgba(100,100,255,0.16) 50%, rgba(255,0,0,0.12) 100%);
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.55), 0 0 8px rgba(100, 100, 255, 0.2);
+}
+.probability-fill-a,
+.probability-fill-b {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    transition: width 0.35s ease;
+}
+.probability-fill-a {
+    left: 0;
+    background: linear-gradient(90deg, rgba(0,255,255) 0%, rgba(0,0,100) 100%);
+}
+.probability-fill-b {
+    right: 0;
+    background: linear-gradient(90deg, rgba(0,0,100) 0%, rgba(255,0,0) 100%);
+}
+.probability-center-line {
+    position: absolute;
+    left: 50%;
+    top: -2px;
+    bottom: -2px;
+    width: 2px;
+    transform: translateX(-50%);
+    background: rgba(100,100,255,0.95);
+    box-shadow: 0 0 10px #6464ff;
+}
+
+.probability-caption {
+    margin-top: 10px;
+    font-size: 11px;
+    opacity: 0.9;
+    letter-spacing: 0.8px;
+}
+
+.graph-panel {
+    margin: 24px auto 40px auto;
+    padding: 24px;
+    width: min(980px, calc(100% - 40px));
+    border-radius: 18px;
+    box-shadow: 0 0 18px #6464ff;
+    background: rgba(0, 0, 100, 0.55);
+}
+.graph-panel h3 {
+    margin-top: 0;
+}
+.graph-caption {
+    margin-top: 12px;
+    font-size: 11px;
+    opacity: 0.9;
+    letter-spacing: 0.8px;
+}
+#state3dGraph {
+    width: 100%;
+    height: 560px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.55), 0 0 8px rgba(100, 100, 255, 0.2);
+}
+
+</style>
+</head>
+<body>
+
+<h2>Shouji Rating System - Experimental Lab</h2>
+
+<div class="container">
+
+<div class="Acard">
+<h3>Player A</h3>
+Rating: <input type="number" id="rA" value="1500"><br>
+Uncertainty: <input type="number" id="uA" value="64"><br>
+Perf Rating: <input type="number" id="qA" value="1500"><br>
+Volatility:  <input type="range" id="vA" value="0.07" min="0" max="1" step="0.01" oninput="document.getElementById('vAdisplay').innerText = parseFloat(this.value).toFixed(2)"><span id="vAdisplay">0.07</span><br>
+ </div>
+
+<div class="Bcard">
+<h3>Player B</h3>
+Rating: <input type="number" id="rB" value="1500"><br>
+Uncertainty: <input type="number" id="uB" value="64"><br>
+Perf Rating: <input type="number" id="qB" value="1500"><br>
+Volatility: <input type="range" id="vB" value="0.07" min="0" max="1" step="0.01" oninput="document.getElementById('vBdisplay').innerText = parseFloat(this.value).toFixed(2)"><span id="vBdisplay">0.07</span><br>
+</div>
+
+<div class="graph-panel">
+<h3>3D State Graph</h3>
+<div id="state3dGraph" aria-label="3D graph of normalized ratings, normalized uncertainties, and volatilities"></div>
+<div class="graph-caption">X axis = normalized ratings (μ), Y axis = normalized uncertainties (σ), Z axis = volatilities (v from 0 to 1).</div>
+</div>
+
+</div>
+
+<div style="margin-top:20px; padding:25px; border-radius:16px; box-shadow:0 0 15px #6464ff; display:inline-block;">
+<h3>System Parameters</h3>
+
+M: <input type="number" id="M" value="1500">
+D: <input type="number" id="D" value="400">
+C: <input id="C" type="range" value="1.5" min="1.2" max="1.8" step="0.01" oninput="document.getElementById('Cdisplay').innerText = parseFloat(this.value).toFixed(2)"><span id="Cdisplay">1.50</span><br>
+F: <input id="F" type="range" value="1.0" min="0.9" max="1.1" step="0.01" oninput="document.getElementById('Fdisplay').innerText = parseFloat(this.value).toFixed(2)"><span id="Fdisplay">1.00</span><br>
+T: <input id="T" type="range" value="2.4" min="2.0" max="2.8" step="0.01" oninput="document.getElementById('Tdisplay').innerText = parseFloat(this.value).toFixed(2)"><span id="Tdisplay">2.40</span><br>
+N: <input id="N" type="range" value="15" min="12" max="18" step="0.01" oninput="document.getElementById('Ndisplay').innerText = parseFloat(this.value).toFixed(2)"><span id="Ndisplay">15.00</span><br>
+W: <input id="W" type="range" value="15" min="12" max="18" step="0.01" oninput="document.getElementById('Wdisplay').innerText = parseFloat(this.value).toFixed(2)"><span id="Wdisplay">1.50</span><br>
+</div>
+<br><br>
+
+<button class="winA" onclick="play(1)">A Wins</button>
+<button class="draw" onclick="play(0.5)">Draw</button>
+<button class="winB" onclick="play(0)">B Wins</button>
+
+
+<div class="probability-panel">
+<h3>Probability Visualizers</h3>
+<div class="probability-grid">
+    <div class="probability-row">
+        <div class="probability-header">
+            <div class="probability-title">Win Probability Bar</div>
+            <div class="probability-values">
+                <span id="winProbAValue">A: 50.00%</span>
+                &nbsp;|&nbsp;
+                <span id="winProbBValue">B: 50.00%</span>
+            </div>
+        </div>
+        <div class="probability-track" aria-label="Win probability comparison">
+            <div class="probability-fill-a" id="winProbABar" style="width:50%;"></div>
+            <div class="probability-fill-b" id="winProbBBar" style="width:50%;"></div>
+            <div class="probability-center-line"></div>
+        </div>
+        <div class="probability-caption">This probability shows the likelyhood of the player winning.</div>
+    </div>
+
+    <div class="probability-row">
+        <div class="probability-header">
+            <div class="probability-title">Performance Probability Bar</div>
+            <div class="probability-values">
+                <span id="perfProbAValue">A: 50.00%</span>
+                &nbsp;|&nbsp;
+                <span id="perfProbBValue">B: 50.00%</span>
+            </div>
+        </div>
+        <div class="probability-track" aria-label="Performance probability comparison">
+            <div class="probability-fill-a" id="perfProbABar" style="width:50%;"></div>
+            <div class="probability-fill-b" id="perfProbBBar" style="width:50%;"></div>
+            <div class="probability-center-line"></div>
+        </div>
+        <div class="probability-caption">This probability shows how the player performed against compare to opponent's believed rating.</div>
+    </div>
+</div>
+</div>
+
+<script>
+
+function syncSliderDisplays() {
+    const ids = ["vA","vB","C","F","T","N","W"];
+    ids.forEach(id => {
+        const slider = document.getElementById(id);
+        const display = document.getElementById(id + "display");
+        if (slider && display) {
+            display.innerText = parseFloat(slider.value).toFixed(2);
+        }
+    });
+}
+
+
+function clampProbability(value) {
+    if (!Number.isFinite(value)) return 0.5;
+    if (value < 0) return 0;
+    if (value > 1) return 1;
+    return value;
+}
+
+function setBarPair(prefix, aValue, bValue) {
+    const safeA = clampProbability(aValue);
+    const safeB = clampProbability(bValue);
+    const aBar = document.getElementById(prefix + 'ABar');
+    const bBar = document.getElementById(prefix + 'BBar');
+    const aLabel = document.getElementById(prefix + 'AValue');
+    const bLabel = document.getElementById(prefix + 'BValue');
+
+    if (aBar) aBar.style.width = (safeA * 100).toFixed(2) + '%';
+    if (bBar) bBar.style.width = (safeB * 100).toFixed(2) + '%';
+    if (aLabel) aLabel.innerText = 'A: ' + (safeA * 100).toFixed(2) + '%';
+    if (bLabel) bLabel.innerText = 'B: ' + (safeB * 100).toFixed(2) + '%';
+}
+
+function render3DGraph() {
+    if (typeof Plotly === 'undefined') return;
+
+    let M = parseFloat(M_input());
+    let D = parseFloat(D_input());
+
+    let rA = parseFloat(rA_input());
+    let rB = parseFloat(rB_input());
+    let uA = parseFloat(uA_input());
+    let uB = parseFloat(uB_input());
+    let vA = parseFloat(vA_input());
+    let vB = parseFloat(vB_input());
+
+    let muA = (rA - M) / D;
+    let muB = (rB - M) / D;
+    let sigmaA = uA / D;
+    let sigmaB = uB / D;
+
+    const trace = {
+        type: 'scatter3d',
+        mode: 'markers+text',
+        x: [muA, muB],
+        y: [sigmaA, sigmaB],
+        z: [vA, vB],
+        text: ['Player A', 'Player B'],
+        textposition: 'top center',
+        hovertemplate:
+            'Player: %{text}<br>' +
+            'μ (normalized rating): %{x:.4f}<br>' +
+            'σ (normalized uncertainty): %{y:.4f}<br>' +
+            'v (volatility): %{z:.4f}<extra></extra>',
+        marker: {
+            size: 8,
+            color: ['cyan', 'red'],
+            line: {
+                color: '#6464ff',
+                width: 2
+            },
+            opacity: 0.95,
+            symbol: 'circle'
+        }
+    };
+
+    const layout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        margin: { l: 0, r: 0, b: 0, t: 0 },
+        font: {
+            family: 'Orbitron, sans-serif',
+            color: '#6464ff'
+        },
+        scene: {
+            bgcolor: 'rgba(0,0,0,0)',
+            xaxis: {
+                title: 'Normalized Rating (μ)',
+                color: '#6464ff',
+                range: [-1, 1],
+                gridcolor: 'rgba(100,100,255,0.25)',
+                zerolinecolor: 'rgba(100,100,255,0.5)',
+                backgroundcolor: 'rgba(0,0,100,0.08)'
+            },
+            yaxis: {
+                title: 'Normalized Uncertainty (σ)',
+                color: '#6464ff',
+                range: [0, 1],
+                gridcolor: 'rgba(100,100,255,0.25)',
+                zerolinecolor: 'rgba(100,100,255,0.5)',
+                backgroundcolor: 'rgba(0,0,100,0.08)'
+            },
+            zaxis: {
+                title: 'Volatility (v)',
+                color: '#6464ff',
+                range: [0, 1],
+                gridcolor: 'rgba(100,100,255,0.25)',
+                zerolinecolor: 'rgba(100,100,255,0.5)',
+                backgroundcolor: 'rgba(0,0,100,0.08)'
+            },
+            camera: {
+                eye: {x: 1.5, y: 1.5, z: 1.5}
+            }
+        },
+        showlegend: false
+    };
+
+    const config = {
+        responsive: true,
+        displaylogo: false
+    };
+
+    Plotly.react('state3dGraph', [trace], layout, config);
+}
+
+function refreshProbabilityBars() {
+    let M = parseFloat(M_input());
+    let D = parseFloat(D_input());
+
+    let rA = parseFloat(rA_input());
+    let rB = parseFloat(rB_input());
+    let uA = parseFloat(uA_input());
+    let uB = parseFloat(uB_input());
+    let qA = parseFloat(qA_input());
+    let qB = parseFloat(qB_input());
+
+    let muA = (rA - M) / D;
+    let muB = (rB - M) / D;
+
+    let sigmaA = uA / D;
+    let sigmaB = uB / D;
+
+    let betaA = (qA - M) / D;
+    let betaB = (qB - M) / D;
+
+    let eA = 0.5 + 0.5 * (muA - muB) / (sigmaB + Math.abs(muA - muB));
+    let eB = 0.5 + 0.5 * (muB - muA) / (sigmaA + Math.abs(muB - muA));
+
+    let pA = 0.5 + 0.5 * (betaA - muB) / (sigmaB + Math.abs(betaA - muB));
+    let pB = 0.5 + 0.5 * (betaB - muA) / (sigmaA + Math.abs(betaB - muA));
+
+    let winProbA = eA / (eA + eB);
+    let winProbB = eB / (eB + eA);
+
+    let perfProbA = pA / (pA + pB);
+    let perfProbB = pB / (pB + pA);
+
+    setBarPair('winProb', winProbA, winProbB);
+    setBarPair('perfProb', perfProbA, perfProbB);
+    render3DGraph();
+}
+
+function attachLiveProbabilityUpdates() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            syncSliderDisplays();
+            refreshProbabilityBars();
+        });
+        input.addEventListener('change', function() {
+            syncSliderDisplays();
+            refreshProbabilityBars();
+        });
+        input.addEventListener('keyup', function() {
+            syncSliderDisplays();
+            refreshProbabilityBars();
+        });
+    });
+}
+
+function play(sA) {
+    let sB = 1 - sA;
+    let M = parseFloat(M_input());
+    let D = parseFloat(D_input());
+
+    let rA = parseFloat(rA_input());
+    let rB = parseFloat(rB_input());
+    let uA = parseFloat(uA_input());
+    let uB = parseFloat(uB_input());
+    let qA = parseFloat(qA_input());
+    let qB = parseFloat(qB_input());
+    let vA = parseFloat(vA_input());
+    let vB = parseFloat(vB_input());
+
+    let C = parseFloat(C_input());
+    let F = parseFloat(F_input());
+    let T = parseFloat(T_input());
+    let N = parseFloat(N_input());
+    let W = parseFloat(W_input());
+
+    let muA = (rA - M) / D;
+    let muB = (rB - M) / D;
+
+    let sigmaA = uA / D;
+    let sigmaB = uB / D;
+
+    let betaA = (qA - M) / D;
+    let betaB = (qB - M) / D;
+
+    let eA = 0.5 + 0.5 * (muA - muB) / (sigmaB + Math.abs(muA - muB));
+    let eB = 0.5 + 0.5 * (muB - muA) / (sigmaA + Math.abs(muB - muA));
+
+    let pA = 0.5 + 0.5 * (betaA - muB) / (sigmaB + Math.abs(betaA - muB));
+    let pB = 0.5 + 0.5 * (betaB - muA) / (sigmaA + Math.abs(betaB - muA));
+
+    let gA = C / (C + sigmaB);
+    let gB = C / (C + sigmaA);
+
+    let muNewA = muA + gA * (sigmaA * (sA - eA) + sigmaA * (pA - eA));
+    let muNewB = muB + gB * (sigmaB * (sB - eB) + sigmaB * (pB - eB));
+
+    let sigmaNewA = (sigmaA * F) / (sigmaA + F) + vA * (1 - sigmaA) / (vA + W);
+    let sigmaNewB = (sigmaB * F) / (sigmaB + F) + vB * (1 - sigmaB) / (vB + W);
+
+    let betaNewA = Math.random() * 2 - 1;
+    let betaNewB = Math.random() * 2 - 1;
+
+    let vNewA = vA * T / (vA + T) + (Math.abs(pA - eA) * (1 - vA)) / (N + Math.abs(pA - eA));
+    let vNewB = vB * T / (vB + T) + (Math.abs(pB - eB) * (1 - vB)) / (N + Math.abs(pB - eB));
+
+    let rNewA = M + D * muNewA;
+    let rNewB = M + D * muNewB;
+
+    let uNewA = D * sigmaNewA;
+    let uNewB = D * sigmaNewB;
+
+    let qNewA = M + D * betaNewA;
+    let qNewB = M + D * betaNewB;
+
+    setValues(rNewA, rNewB, uNewA, uNewB, qNewA, qNewB, vNewA, vNewB);
+}
+
+function rA_input(){ return document.getElementById("rA").value }
+function rB_input(){ return document.getElementById("rB").value }
+function uA_input(){ return document.getElementById("uA").value }
+function uB_input(){ return document.getElementById("uB").value }
+function qA_input(){ return document.getElementById("qA").value }
+function qB_input(){ return document.getElementById("qB").value }
+function vA_input(){ return document.getElementById("vA").value }
+function vB_input(){ return document.getElementById("vB").value }
+function M_input(){ return document.getElementById("M").value }
+function D_input(){ return document.getElementById("D").value }
+function C_input(){ return document.getElementById("C").value }
+function F_input(){ return document.getElementById("F").value }
+function T_input(){ return document.getElementById("T").value }
+function N_input(){ return document.getElementById("N").value }
+function W_input(){ return document.getElementById("W").value }
+
+function setValues(rA,rB,uA,uB,qA,qB,vA,vB){
+    document.getElementById("rA").value = rA.toFixed(2);
+    document.getElementById("rB").value = rB.toFixed(2);
+    document.getElementById("uA").value = uA.toFixed(4);
+    document.getElementById("uB").value = uB.toFixed(4);
+    document.getElementById("qA").value = qA.toFixed(2);
+    document.getElementById("qB").value = qB.toFixed(2);
+    document.getElementById("vA").value = vA.toFixed(4);
+    document.getElementById("vB").value = vB.toFixed(4);
+
+    syncSliderDisplays();
+    refreshProbabilityBars();
+}
+
+window.onload = function() {
+    syncSliderDisplays();
+    refreshProbabilityBars();
+    attachLiveProbabilityUpdates();
+};
+</script>
+
+</body>
+</html>
